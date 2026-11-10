@@ -16,12 +16,15 @@ run = lambda *a: subprocess.run(list(a), check=True, capture_output=True)
 probe = lambda f: float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]).decode())
 
 # ── voice: teaser, then the ask (two clips so we know exactly when the ask starts)
-def say(text, path): subprocess.run([PIPER, '--model', MODEL, '--output_file', path], input=text.encode(), check=True, capture_output=True)
-say(f"Part {NUM[part + 1]}: {spoken}? Follow so you don't miss it.", f'{tmp}/a.wav')
+def say(text, path): subprocess.run([PIPER, '--model', MODEL, '--length_scale', '0.97', '--noise_scale', '0.72', '--noise_w', '0.9', '--output_file', path], input=text.encode(), check=True, capture_output=True)
+say(f"Part {NUM[part + 1]}: {spoken}?", f'{tmp}/a.wav')   # "follow" stays on screen only: a shorter end card keeps completion rate up
 say(f"And comment {kw} for my free {tool.lower()}." if mode == 'ig' else f"And grab my free {tool.lower()} from the pinned comment.", f'{tmp}/b.wav')
 ta = probe(f'{tmp}/a.wav'); tb = probe(f'{tmp}/b.wav'); GAP = 0.25; ASK = 0.15 + ta + GAP
-run('ffmpeg', '-v', 'error', '-y', '-i', f'{tmp}/a.wav', '-i', f'{tmp}/b.wav', '-filter_complex', f'[0]adelay=150|150[x];[1]adelay={int(ASK * 1000)}|{int(ASK * 1000)}[y];[x][y]amix=inputs=2:normalize=0,apad', '-t', f'{ASK + tb + 0.8:.3f}', f'{tmp}/voice.wav')
-dur = ASK + tb + 0.8
+run('ffmpeg', '-v', 'error', '-y', '-i', f'{tmp}/a.wav', '-i', f'{tmp}/b.wav', '-filter_complex', f'[0]adelay=150|150[x];[1]adelay={int(ASK * 1000)}|{int(ASK * 1000)}[y];[x][y]amix=inputs=2:normalize=0,apad', '-t', f'{ASK + tb + 0.55:.3f}', f'{tmp}/voice.wav')
+dur = ASK + tb + 0.55
+# same broadcast polish as pro_voice.py, so the end card sounds like the same narrator
+run('ffmpeg', '-v', 'error', '-y', '-i', f'{tmp}/voice.wav', '-af', 'highpass=f=75,lowshelf=g=2.5:f=170,equalizer=f=380:t=q:w=1.1:g=-2.5,equalizer=f=3300:t=q:w=1.0:g=3,highshelf=g=2:f=9000,deesser=i=0.35,acompressor=threshold=-20dB:ratio=3:attack=6:release=120:makeup=3dB,alimiter=limit=0.89', f'{tmp}/voice_pro.wav')
+os.replace(f'{tmp}/voice_pro.wav', f'{tmp}/voice.wav')
 
 # ── end-card sound effects from the kit's sound pack (kit/sfx, made by make_sfx.py); skipped if the pack is missing
 SFX = os.environ.get('SFX_DIR', os.path.expanduser('~/faceless-shorts/kit/sfx'))
