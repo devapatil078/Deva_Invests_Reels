@@ -37,8 +37,8 @@ probe = ImageDraw.Draw(Image.new('RGB', (W, H)))
 def runs(s): return [(t, i % 2 == 1) for i, t in enumerate(re.split(r'[\[\]]', s)) if t]
 size = 132
 while size > 70 and max(probe.textlength(re.sub(r'[\[\]]', '', l), font=BLACK(size)) for l in a.lines) > W - 110: size -= 4
-fh = BLACK(size); lh = int(size * 1.08)
-block = 64 + 46 + lh * len(a.lines) + (88 if a.sub else 0)
+fh = BLACK(size); lh = int(size * 1.08); BH = 100
+block = BH + 46 + lh * len(a.lines) + (88 if a.sub else 0)
 y0 = int(H / 2 - block / 2) + a.ypos
 
 # soft dark band behind the text, fading out above and below
@@ -51,14 +51,14 @@ im = Image.composite(Image.new('RGB', (W, H), (8, 10, 16)), im, band)
 d = ImageDraw.Draw(im)
 
 # badge: PART n · SERIES
-f1, f2 = BLACK(40), BLACK(34)
+f1, f2 = BLACK(66), BLACK(48)
 p1 = f'PART {a.part}'; w1 = d.textlength(p1, font=f1); w2 = d.textlength(a.series, font=f2)
-x0 = (W - (w1 + w2 + 96)) / 2
-d.rounded_rectangle([x0, y0, x0 + w1 + 40, y0 + 64], 32, fill=YEL); d.text((x0 + 20, y0 + 32), p1, font=f1, fill=INK, anchor='lm')
-d.rounded_rectangle([x0 + w1 + 56, y0, x0 + w1 + w2 + 96, y0 + 64], 32, fill=(40, 42, 48)); d.text((x0 + w1 + 76, y0 + 33), a.series, font=f2, fill=(255, 255, 255), anchor='lm')
+x0 = (W - (w1 + w2 + 136)) / 2
+d.rounded_rectangle([x0, y0, x0 + w1 + 56, y0 + BH], BH // 2, fill=YEL); d.text((x0 + 28, y0 + BH / 2 + 1), p1, font=f1, fill=INK, anchor='lm')
+d.rounded_rectangle([x0 + w1 + 76, y0 + 8, x0 + w1 + w2 + 136, y0 + BH - 8], (BH - 16) // 2, fill=(40, 42, 48)); d.text((x0 + w1 + 106, y0 + BH / 2 + 1), a.series, font=f2, fill=(255, 255, 255), anchor='lm')
 
 # hook: [highlight] in yellow, thick dark stroke
-y = y0 + 64 + 34
+y = y0 + BH + 34
 for l in a.lines:
     rs = runs(l); tw = sum(d.textlength(t, font=fh) for t, _ in rs); x = (W - tw) / 2
     for t, hi in rs:
