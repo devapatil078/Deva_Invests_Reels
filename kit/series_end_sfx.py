@@ -10,15 +10,37 @@ src, out, mode, part, n1, n2, spoken, tool, kw = sys.argv[1:10]; part = int(part
 FONT = os.path.expanduser('~/faceless-shorts/bank-money/fonts/Inter-Black.otf'); FONT2 = os.path.expanduser('~/faceless-shorts/bank-money/fonts/Inter-ExtraBold.otf')
 PIPER, MODEL = '/home/claude/piper/piper/piper', '/home/claude/piper/voices/en-us-ryan-high.onnx'
 W, H, FPS = 1080, 1920, 24
-NUM = {2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight'}
+NUM = {2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten', 11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen', 15: 'fifteen', 16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen', 20: 'twenty'}
 tmp = tempfile.mkdtemp()
 run = lambda *a: subprocess.run(list(a), check=True, capture_output=True)
 probe = lambda f: float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]).decode())
 
 # ── voice: teaser, then the ask (two clips so we know exactly when the ask starts)
-def say(text, path): subprocess.run([PIPER, '--model', MODEL, '--length_scale', '0.97', '--noise_scale', '0.72', '--noise_w', '0.9', '--output_file', path], input=text.encode(), check=True, capture_output=True)
-say(f"Part {NUM[part + 1]}: {spoken}?", f'{tmp}/a.wav')   # "follow" stays on screen only: a shorter end card keeps completion rate up
-say(f"And comment {kw} for my free {tool.lower()}." if mode == 'ig' else f"And grab my free {tool.lower()} from the pinned comment.", f'{tmp}/b.wav')
+def _clean_ah(path):
+    # owner, Nov 11: no 'ah' sounds. Piper adds a short breathy voiced blip after the last word; cut it.
+    import numpy as _np, wave as _w
+    with _w.open(path) as f: sr = f.getframerate(); ch = f.getnchannels(); x = _np.frombuffer(f.readframes(f.getnframes()), _np.int16).astype(float) / 32768
+    fr = int(0.01 * sr); n = len(x) // fr
+    on = 20 * _np.log10(_np.sqrt((x[:n * fr].reshape(n, fr) ** 2).mean(1)) + 1e-9) > -42; r = []; i = 0
+    while i < n:
+        if on[i]:
+            j = i
+            while j < n and on[j]: j += 1
+            r.append((i * fr, j * fr)); i = j
+        else: i += 1
+    for _ in range(2):
+        if len(r) < 2: break
+        a, b = r[-1]; seg = x[a:b]; zcr = _np.mean(_np.abs(_np.diff(_np.sign(seg)))) / 2 * sr if len(seg) > 2 else 0
+        if (b - a) / sr < 0.22 and (a - r[-2][1]) / sr >= 0.02 and zcr < 1800: x = x[:r[-2][1] + int(0.03 * sr)]; r = r[:-1]
+        else: break
+    db = 20 * _np.log10(_np.sqrt((x[:(len(x) // fr) * fr].reshape(-1, fr) ** 2).mean(1)) + 1e-9); loud = _np.where(db > db.max() - 24)[0]
+    if len(loud):   # trim the dragged last sound (heard as 'uh'): keep 60 ms after the last loud frame, then fade
+        e = min(len(x), (loud[-1] + 1) * fr + int(0.06 * sr)); x = x[:e].copy(); m = min(len(x) // 4, int(0.04 * sr))
+        if m > 0: x[-m:] *= _np.linspace(1, 0, m) ** 1.5
+    with _w.open(path, 'wb') as f: f.setnchannels(ch); f.setsampwidth(2); f.setframerate(sr); f.writeframes((_np.clip(x, -1, 1) * 32767).astype('<i2').tobytes())
+def say(text, path): subprocess.run([PIPER, '--model', MODEL, '--length_scale', '0.97', '--noise_scale', '0.72', '--noise_w', '0.9', '--output_file', path], input=text.encode(), check=True, capture_output=True); _clean_ah(path)
+say(os.environ.get("SPOKEN_FULL") or f"Part {NUM[part + 1]}: {spoken}?", f'{tmp}/a.wav')   # "follow" stays on screen only: a shorter end card keeps completion rate up
+say(f"And comment {kw} for my free {tool.lower()}." if mode == 'ig' else f"And grab my free {tool.lower()} from the description.", f'{tmp}/b.wav')
 ta = probe(f'{tmp}/a.wav'); tb = probe(f'{tmp}/b.wav'); GAP = 0.25; ASK = 0.15 + ta + GAP
 run('ffmpeg', '-v', 'error', '-y', '-i', f'{tmp}/a.wav', '-i', f'{tmp}/b.wav', '-filter_complex', f'[0]adelay=150|150[x];[1]adelay={int(ASK * 1000)}|{int(ASK * 1000)}[y];[x][y]amix=inputs=2:normalize=0,apad', '-t', f'{ASK + tb + 0.55:.3f}', f'{tmp}/voice.wav')
 dur = ASK + tb + 0.55
@@ -34,7 +56,7 @@ if os.path.exists(f'{SFX}/chime_1.wav'):
         b = subprocess.run(['ffmpeg', '-v', 'error', '-i', f, '-f', 'f32le', '-ac', '2', '-ar', '48000', '-'], capture_output=True, check=True).stdout
         return np.frombuffer(b, dtype=np.float32).reshape(-1, 2).astype(np.float64)
     v = rd(f'{tmp}/voice.wav'); vr = np.sqrt(np.mean(v[np.abs(v).max(1) > 0.01] ** 2) + 1e-12)
-    for name, t, lvl in [('whoosh_2', 0.0, -2), ('pop_1', 0.05, -6), ('pop_3', 0.32, -6), ('pop_2', ASK - 0.12, -7), ('click_1', ASK + 0.22, -5), ('chime_1', ASK + 0.5, -4)]:
+    for name, t, lvl in [('chime_1', ASK + 0.5, -9)]:
         x = rd(f'{SFX}/{name}.wav'); x *= vr * 10 ** (lvl / 20) / (np.sqrt(np.mean(x ** 2)) + 1e-12)
         x = np.clip(x, -0.5, 0.5); i = int(max(0, t) * 48000); n = min(len(x), len(v) - i)
         if n > 0: v[i:i + n] += x[:n]
@@ -71,7 +93,7 @@ bg = Image.open(f'{tmp}/last.png').convert('RGB').resize((W, H)).filter(ImageFil
 L = dict(next=pill_layer(f'NEXT · PART {part + 1}', 56, (17, 17, 17), (255, 212, 59)), t1=text_layer(n1, 104, (255, 255, 255)), t2=text_layer(n2, 116, (255, 212, 59)),
          fol=text_layer("follow so you don't miss it", 50, (220, 228, 238), 6, FONT2), free=text_layer('FREE ' + tool.upper(), 64, (255, 255, 255), 8))
 if mode == 'ig': L.update(a1=text_layer('COMMENT', 92, (255, 255, 255)), a2=pill_layer(kw.upper(), 130, (17, 17, 17), (255, 212, 59)), a3=text_layer("and I'll DM it to you", 48, (220, 228, 238), 6, FONT2))
-else: L.update(a1=text_layer('GET IT IN THE', 76, (255, 255, 255)), a2=pill_layer('PINNED COMMENT', 84, (17, 17, 17), (255, 212, 59)), a3=text_layer('free spreadsheet, no catch', 48, (220, 228, 238), 6, FONT2))
+else: L.update(a1=text_layer('LINK IN THE', 76, (255, 255, 255)), a2=pill_layer('DESCRIPTION', 84, (17, 17, 17), (255, 212, 59)), a3=text_layer('7 free tools, no catch', 48, (220, 228, 238), 6, FONT2))
 for i in range(int(dur * FPS)):
     t = i / FPS; f = bg.convert('RGBA')
     paste(f, L['next'], 540, 330, eob(seg(t, 0.0, 0.3))); paste(f, L['t1'], 540, 500, eob(seg(t, 0.15, 0.45))); paste(f, L['t2'], 540, 640, eob(seg(t, 0.3, 0.6)) * (1 + 0.03 * math.sin(t * 6)))

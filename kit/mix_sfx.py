@@ -20,6 +20,13 @@ P = Path(sys.argv[1] if len(sys.argv) > 1 else '.')
 SR = 48000
 rng = np.random.default_rng(11)
 cj = json.loads((P / 'data/cues.json').read_text())
+cj['cues'] = [c for c in cj['cues'] if c.get('type') not in ('whoosh', 'slide', 'zip')]   # owner, Nov 11: no whoosh sounds
+cj['cues'] = [dict(c, type='click', gain=round(0.45 * float(c.get('gain', 1.0)), 3)) if c.get('type') in ('pop', 'plop', 'boing', 'gulp') else c for c in cj['cues']]   # owner, Nov 11: no 'ah' sounds (the pitched pop sounded like a voice), so pops play as soft clicks
+_ess, _seen = [], set()   # owner, Nov 11: 'no unnecessary sounds, just essentials, very professional': keep ONE impact (the big reveal) and at most ONE chime; drop every other effect
+for _c in sorted(cj['cues'], key=lambda c: c['t']):
+    _k = {'impact': 'impact', 'thud': 'impact', 'slam': 'impact', 'chime': 'chime', 'sparkle': 'chime'}.get(_c.get('type'))
+    if _k and _k not in _seen: _seen.add(_k); _ess.append(dict(_c, gain=round(0.8 * float(_c.get('gain', 1.0)), 3)))
+cj['cues'] = _ess
 script = json.loads((P / 'script.json').read_text())
 DUR = float(cj['duration'])
 N = int(DUR * SR) + SR // 10
@@ -147,7 +154,7 @@ if vf.exists():
     rms = np.sqrt(np.mean(voice ** 2) + 1e-12); voice *= db(-19) / rms
     mix += voice
 # music
-mus = script.get('music', 'bed')
+mus = 'none'   # owner, Nov 11: essentials only; the music bed's plucked notes sounded like 'uh uh', so no music
 if mus and mus != 'none':
     m = music_bed() if mus == 'bed' else music_tension() if mus == 'tension' else None
     if m is None:
