@@ -1,10 +1,13 @@
 """Reel cover (1080x1920 JPG): a clean frame from the reel (no captions) + the series/part badge + the main hook.
+Standalone reels (Nov 12 strategy, no Part numbers): pass part "0" (or "-") and a topic tag as <SERIES>, e.g.
+  python3 make_cover.py f.jpg out.jpg "FLIPPING" 0 "[$83,000] KITCHEN" "OR [$4,700] DOOR?"   -> small topic tag, no PART badge.
 
   python3 make_cover.py <frame.jpg> <out.jpg> "<SERIES>" <part> "<line 1>" "<line 2>" ["<line 3>"] [--shift 0] [--ypos 0] [--sub "THE 70% RULE"]
 
 Wrap the word(s) to highlight in [brackets]: "SOLD FOR [21% MORE]". The text block sits in the vertical middle (move it with --ypos),
 inside the Instagram grid crop (3:4, centre). Get a clean frame with:  QS='&nocap=1&res=1' node tools/capture.mjs frames <dir> "<t>"
 (the project's main.js skips captions when the URL has nocap).
+(Nov 12 FLIPPING run: this copy = the repo's kit/make_cover.py at local commit d97ab6a, which could not be pushed: copy it over kit/make_cover.py.)
 """
 import argparse, glob, os, re
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -13,6 +16,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('frame'); ap.add_argument('out'); ap.add_argument('series'); ap.add_argument('part')
 ap.add_argument('lines', nargs='+'); ap.add_argument('--shift', type=int, default=0); ap.add_argument('--ypos', type=int, default=0, help='move the text block up (-) or down (+) from the centre'); ap.add_argument('--sub', default='')
 a = ap.parse_args()
+STANDALONE = str(a.part).strip() in ('0', '-', '')
 W, H = 1080, 1920
 
 
@@ -50,12 +54,15 @@ for y in range(H):
 im = Image.composite(Image.new('RGB', (W, H), (8, 10, 16)), im, band)
 d = ImageDraw.Draw(im)
 
-# badge: PART n · SERIES
-f1, f2 = BLACK(66), BLACK(48)
-p1 = f'PART {a.part}'; w1 = d.textlength(p1, font=f1); w2 = d.textlength(a.series, font=f2)
-x0 = (W - (w1 + w2 + 136)) / 2
-d.rounded_rectangle([x0, y0, x0 + w1 + 56, y0 + BH], BH // 2, fill=YEL); d.text((x0 + 28, y0 + BH / 2 + 1), p1, font=f1, fill=INK, anchor='lm')
-d.rounded_rectangle([x0 + w1 + 76, y0 + 8, x0 + w1 + w2 + 136, y0 + BH - 8], (BH - 16) // 2, fill=(40, 42, 48)); d.text((x0 + w1 + 106, y0 + BH / 2 + 1), a.series, font=f2, fill=(255, 255, 255), anchor='lm')
+if STANDALONE:   # small topic tag only (no PART badge)
+    f2 = BLACK(44); w2 = d.textlength(a.series, font=f2); x0 = (W - (w2 + 64)) / 2
+    d.rounded_rectangle([x0, y0 + 8, x0 + w2 + 64, y0 + BH - 8], (BH - 16) // 2, fill=(40, 42, 48)); d.text((W / 2, y0 + BH / 2 + 1), a.series, font=f2, fill=(255, 255, 255), anchor='mm')
+else:   # badge: PART n · SERIES
+    f1, f2 = BLACK(66), BLACK(48)
+    p1 = f'PART {a.part}'; w1 = d.textlength(p1, font=f1); w2 = d.textlength(a.series, font=f2)
+    x0 = (W - (w1 + w2 + 136)) / 2
+    d.rounded_rectangle([x0, y0, x0 + w1 + 56, y0 + BH], BH // 2, fill=YEL); d.text((x0 + 28, y0 + BH / 2 + 1), p1, font=f1, fill=INK, anchor='lm')
+    d.rounded_rectangle([x0 + w1 + 76, y0 + 8, x0 + w1 + w2 + 136, y0 + BH - 8], (BH - 16) // 2, fill=(40, 42, 48)); d.text((x0 + w1 + 106, y0 + BH / 2 + 1), a.series, font=f2, fill=(255, 255, 255), anchor='lm')
 
 # hook: [highlight] in yellow, thick dark stroke
 y = y0 + BH + 34
