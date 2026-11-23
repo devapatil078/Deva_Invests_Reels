@@ -16,6 +16,17 @@ This is research on what is currently breaking out in faceless money/real-estate
 | **Looped endings**: the last line flows back into the first | most of the top Instagram outliers loop |
 | **Sound effects in animated explainers** | almost every animated outlier uses them (ours do now) |
 
+## Sunday refresh, Nov 22 2026 (vidIQ outlier search, Instagram + TikTok, last 30 days, creators under 200K followers; plus our own Metricool numbers)
+Formats only; never copy anyone's script, visuals or wording. The CONTENT_STRATEGY_2026-11-12.md rules (standalone, no Parts, 25-40 s, one ask) still win.
+| Pattern | Evidence |
+|---|---|
+| **"Same $X <one object>, 2-3 choices"**: one purchase, characters pick different paths, outcomes revealed step by step (fits our would-you-rather with kit characters) | 3D "Same $55,000 truck: cash, 7% loan or lease?" 1.1M (27.5x); "$1,500/mo for 30 years: rent vs own" 306K (25x, TikTok); "Same pay. Same house. One rents, one buys" 5.5M (9x, TikTok) |
+| **One asset, upgraded step by step** until the money flips (3D house, each change adds a number) | 3D ADU explainer "You buy a house with a backyard and a two-car garage..." 584K (1,130x) |
+| **"Your bank/agent hopes you never learn this" + a send ask aimed at a group** ("Send this to every homeowner") | text-on-screen mortgage tip 430K (1,567x) |
+| **Everyday choice, expert answer** ("Credit card or debit card?") | 1.9M (141x) |
+| **OUR data (Nov 15-22, Instagram):** hidden math on something the viewer already buys/owns wins: café $5 tap 924 views / 13.1 s / 37% skip; gift card $50 → $123: 365 / 16.4 s (best watch time) / 35% skip; $100 dinner 492; Costco 465. Investor-jargon and unpopular-truth hooks trail: Zestimate 124 / 60% skip; 1% rule 144 / 70% skip. The owner's own first-person deal post reached 521. |
+Takeaways: keep "your $X <thing you buy/own>" hooks with a small surprising number; aim send asks at a named group ("someone about to sell their house", "every homeowner"); next would-you-rather: "same $X, two or three choices" with kit characters side by side.
+
 ## Rules for every reel
 1. **Hook, 0-2 s:** the cover flashes first, then the first spoken line, at most 10 words, carrying a concrete number and tension. Use one of these patterns:
    - "Would you rather X or Y?"
