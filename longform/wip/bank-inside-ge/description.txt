@@ -1,0 +1,36 @@
+How GE Capital, the bank inside General Electric, made GE worth about $600 billion, then nearly broke it in the 2008 financial crisis. Warren Buffett's $3B deal, the Fed's $16B, the FDIC guarantee on $74B of debt, and the 15-year fallout, told from the filings.
+
+CHAPTERS
+0:00 GE's 2008 rescue in 40 seconds
+0:51 The bank inside GE
+1:38 The Side Business: from 1932 appliance loans to $646B of assets
+3:25 The Rollover: commercial paper and the September 2008 panic
+5:12 Buffett's Price: $3B at 10% and a $12B share sale
+6:39 We Need Help: the FDIC guarantee and the Fed's $16B
+8:30 The Bill: dividend cut, AAA lost, GE Capital sold off
+10:47 The Leftover: the long-term care insurance bill and the Dow exit
+12:53 The Real Lesson: the breakup, GE Vernova and AI power
+15:11 Your call
+
+KEY SOURCES
+GE Form 10-K, FY2008 (GECS earnings): https://www.sec.gov/Archives/edgar/data/0000040545/000004054509000012/frm10k.htm
+GE Capital Form 10-Q, Q1 2009 (FDIC-guaranteed debt): https://www.sec.gov/Archives/edgar/data/0000040554/000079746309000020/gecc10q33109.htm
+GE Form 8-K, Oct 1, 2008 (Berkshire Hathaway preferred stock): https://www.sec.gov/Archives/edgar/data/0000040545/000090951808000745/mm10-0108_8ke991.htm
+GE Form 10-K, FY2009 (commercial paper): https://www.sec.gov/Archives/edgar/data/0000040545/000004054510000010/frm10k.htm
+ProPublica, GE borrowed $16 billion through the Fed (Dec 2010): https://www.propublica.org/article/general-electric-tapped-fed-to-borrow-16-billion
+ProPublica, GE timeline (Paulson memoir account and GE's response): https://www.propublica.org/article/paulson-ge-timeline
+NBC/Reuters, FDIC backing for $139B of GE Capital debt (Nov 2008): https://www.nbcnews.com/id/wbna27688157
+AP/NBC, GE cuts dividend (Feb 2009): https://www.nbcnews.com/id/wbna29431869
+CNN Money, S&P downgrade (Mar 12, 2009): https://money.cnn.com/2009/03/12/news/companies/ge_credit_downgrade/index.htm
+GE, GE Capital Exit Plan (Apr 10, 2015): https://www.ge.com/news/press-releases/ge-create-simpler-more-valuable-industrial-company-selling-most-ge-capital-assets
+US Treasury / FSOC, rescission (June 2016): https://home.treasury.gov/system/files/261/June%20FSOC%20Announces%20Rescission%20of%20Nonbank%20Financial%20Company%20Designation.pdf
+GE, insurance review (Jan 16, 2018): https://www.ge.com/news/press-releases/ge-provides-update-insurance-review-62b-after-tax-gaap-charge-4q17
+NPR, GE removed from the Dow (June 2018): https://www.npr.org/2018/06/19/621659846/dow-jones-drops-ge-a-member-of-the-original-industrial-average-in-1896
+SEC press release 2020-312 ($200M penalty): https://www.sec.gov/news/press-release/2020-312
+GE Vernova Q3 2026 results: https://www.sec.gov/Archives/edgar/data/0001996810/000199681026000162/gevpressrelease3q26.htm
+Full fact table with every figure and source is kept with the project.
+
+This video is for education only. It is not financial, investment, legal or tax advice. The government programs described were legal and open to companies that qualified, and no wrongdoing is alleged against any person named. The SEC matter was settled without GE admitting or denying the findings. Conversations described from Henry Paulson's memoir are his account, which GE disputes. Figures are as reported by the sources above and rounded. Documents on screen are labelled recreations, not the originals. GE, General Electric and other names are used for identification only; no logos are shown.
+Narration: Piper text-to-speech, LibriTTS voice model (CC BY 4.0). Music and sound effects: original.
+
+#GeneralElectric #FinancialCrisis #Business
